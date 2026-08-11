@@ -2,7 +2,6 @@
   'use strict';
 
   const money = (n) => '$' + Number(n).toLocaleString('en-US');
-  const now = () => new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
   /* — keep the pinned hero flush below the nav, even if the nav wraps — */
   const navEl = document.querySelector('.nav');
@@ -26,13 +25,6 @@
     { id: 'foundation', tier: 'Base', label: 'Foundation', keys: [], desc: 'Brand strategy only. Positioning, messaging, naming review.' },
     { id: 'signature', tier: 'Most chosen', label: 'Signature', keys: ['identity', 'web'], desc: 'Strategy, identity system and a designed, built website.' },
     { id: 'flagship', tier: 'Full stack', label: 'Flagship', keys: MODULES.map((m) => m.key), desc: 'Everything: identity, build, CMS and motion.' }
-  ];
-
-  const TICKER = [
-    'Enquiry received · Verso Coffee Roasters',
-    'Studio notified · email + Slack',
-    'Contact record written to CMS',
-    'Proposal template generated from scope'
   ];
 
   /* — pricing configurator — */
@@ -164,25 +156,6 @@
       if (scopeInput) scopeInput.value = scopeLabel();
     });
   }
-
-  /* — studio activity ticker — */
-  const tickerEl = document.getElementById('ticker');
-  let tickerIndex = 0;
-  function renderTicker() {
-    const lines = TICKER.map((t, i) => {
-      const d = (i - tickerIndex + TICKER.length) % TICKER.length;
-      const opacity = d === 0 ? 1 : d === 1 ? 0.55 : d === 2 ? 0.28 : 0;
-      return { text: t, opacity };
-    }).filter((l) => l.opacity !== 0);
-    tickerEl.innerHTML = lines
-      .map((l) => `<div class="activity-line" style="opacity:${l.opacity}"><time>${now()}</time><span>${l.text}</span></div>`)
-      .join('');
-  }
-  renderTicker();
-  setInterval(() => {
-    tickerIndex = (tickerIndex + 1) % TICKER.length;
-    renderTicker();
-  }, 2600);
 
   /* — scroll reveal — */
   const revealEls = document.querySelectorAll('[data-reveal]');

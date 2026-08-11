@@ -273,15 +273,12 @@ hr.rule { height: 2px; border: 0; margin: 0; background: var(--color-divider); }
 }
 .hero-scroll-cue .label { white-space: nowrap; }
 
-/* — intro / activity — */
+/* — intro — */
 .intro-section { position: relative; overflow: hidden; border-bottom: 2px solid var(--color-divider); }
 .intro-grid {
   position: relative; max-width: 1280px; margin: 0 auto;
   padding: clamp(44px,6vw,80px) clamp(20px,5vw,72px);
-  display: grid; grid-template-columns: minmax(0,1.55fr) minmax(0,1fr);
-  gap: clamp(28px,5vw,64px); align-items: end;
 }
-@media (max-width: 860px) { .intro-grid { grid-template-columns: 1fr; } }
 .eyebrow {
   display: flex; align-items: center; gap: 10px;
   font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
@@ -294,19 +291,6 @@ hr.rule { height: 2px; border: 0; margin: 0; background: var(--color-divider); }
 }
 .intro-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 36px; }
 .intro-actions .btn { justify-content: flex-start; padding: 12px 18px; font-size: 15px; white-space: nowrap; }
-
-.activity-card { border: 2px solid var(--color-divider); background: var(--color-surface); }
-.activity-head {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 12px 16px; border-bottom: 2px solid var(--color-divider);
-}
-.activity-head .label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: color-mix(in srgb, var(--color-text) 65%, transparent); }
-.activity-head .dot { width: 8px; height: 8px; background: var(--color-accent); animation: rm-blink 1.2s steps(1,end) infinite; }
-.activity-body { padding: 16px; min-height: 132px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; line-height: 1.5; }
-.activity-line { display: flex; gap: 10px; align-items: baseline; transition: opacity .4s ease; }
-.activity-line time { font-variant-numeric: tabular-nums; color: var(--color-accent-700); font-size: 11px; }
-.activity-progress { height: 2px; background: var(--color-divider); overflow: hidden; }
-.activity-progress .bar { width: 30%; height: 2px; background: var(--color-accent); animation: rm-sweep 2.8s linear infinite; }
 
 /* — stats — */
 .stats-section { padding: clamp(40px,5vw,68px) 0; }
@@ -330,25 +314,6 @@ hr.rule { height: 2px; border: 0; margin: 0; background: var(--color-divider); }
 .service-row .index { font-family: var(--font-heading); font-weight: 800; font-size: 15px; margin: 0; font-variant-numeric: tabular-nums; }
 .service-row h3 { font-family: var(--font-heading); font-weight: 800; font-size: 26px; line-height: 1.15; letter-spacing: -.015em; margin: 0; }
 .service-row p { font-size: 15.5px; line-height: 1.65; margin: 0; max-width: 52ch; color: color-mix(in srgb, var(--color-text) 80%, transparent); }
-
-/* — work — */
-.work-section { padding: clamp(48px,6vw,86px) 0; }
-.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
-.section-head .section-kicker { margin: 0; }
-.section-head .aside { font-size: 13px; margin: 0; color: color-mix(in srgb, var(--color-text) 60%, transparent); }
-.work-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 0; background: var(--color-bg); }
-.work-card { background: var(--color-bg); border: 1px solid var(--color-divider); padding: 0 0 20px; }
-.work-figure {
-  margin: 0 0 18px; width: 100%; aspect-ratio: 4/3;
-  display: flex; align-items: center; justify-content: center;
-  background: repeating-linear-gradient(135deg, var(--color-neutral-300), var(--color-neutral-300) 10px, var(--color-neutral-200) 10px, var(--color-neutral-200) 20px);
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
-  font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
-}
-.work-body { padding: 0 20px; }
-.work-tag { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-accent); margin: 0 0 8px; }
-.work-title { font-family: var(--font-heading); font-weight: 800; font-size: 20px; line-height: 1.2; margin: 0 0 8px; }
-.work-desc { font-size: 14px; line-height: 1.6; margin: 0; color: color-mix(in srgb, var(--color-text) 78%, transparent); }
 
 /* — principal — */
 .principal-section { padding: clamp(48px,6vw,86px) 0; }
