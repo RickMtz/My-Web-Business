@@ -208,7 +208,19 @@
   const scrubBlocks = Array.from(document.querySelectorAll('.scrub-block'));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // How much scroll (in viewport-heights) each headline gets before the next
+  // one starts crossfading in. Bigger = more time to read each line.
+  const SEGMENT_LEN = 1.7;
+  // A block sits fully visible, alone, for HOLD_HALF segments on either side
+  // of its own center, then crossfades over TRANS segments into the next.
+  // 2*HOLD_HALF + TRANS = 1 makes one block's fade-out exactly meet the
+  // next block's fade-in — no dead gap, no distant blocks bleeding through.
+  const HOLD_HALF = 0.4;
+  const TRANS = 0.2;
+
   if (stage && pin && !reduceMotion) {
+    stage.style.height = (scrubBlocks.length * SEGMENT_LEN * 100) + 'vh';
+
     let mx = 0, my = 0, tx = 0, ty = 0;
     const onMove = (e) => {
       const r = pin.getBoundingClientRect();
@@ -222,23 +234,38 @@
     const loop = () => {
       mx += (tx - mx) * 0.07;
       my += (ty - my) * 0.07;
-      if (figure) figure.style.transform = `translate3d(${mx * 10}px,${my * 5}px,0) scale(1.04)`;
 
       const rect = stage.getBoundingClientRect();
       const vh = window.innerHeight || 1;
+      const segmentPx = SEGMENT_LEN * vh;
       const scrolled = Math.max(0, -rect.top);
-      const progress = scrolled / vh;
+      const progress = scrolled / segmentPx; // continuous, in segment units
+      const depth = Math.max(0, Math.min(1, progress / (scrubBlocks.length || 1)));
+
+      // slow, continuous zoom-out + upward pan tied to scroll — a "slight
+      // scroll effect" on the photo, independent of the pointer parallax
+      const scrollScale = 1.1 - depth * 0.08;
+      const scrollPanY = depth * -34;
+      if (figure) {
+        figure.style.transform =
+          `translate3d(${mx * 10}px,${my * 5 + scrollPanY}px,0) scale(${scrollScale})`;
+      }
 
       scrubBlocks.forEach((block, i) => {
         const local = progress - i;
-        if (local > -1.05 && local < 1.05) {
-          const clamped = Math.max(-1, Math.min(1, local));
-          const opacity = Math.max(0, 1 - Math.abs(clamped));
-          const translateY = clamped * 56;
-          const scale = 1 - Math.abs(clamped) * 0.045;
+        const absLocal = Math.abs(local);
+        if (absLocal <= HOLD_HALF) {
+          block.style.opacity = '1';
+          block.style.transform = 'translate3d(0,0,0) scale(1)';
+          block.style.visibility = 'visible';
+        } else if (absLocal < HOLD_HALF + TRANS) {
+          const t = (absLocal - HOLD_HALF) / TRANS; // 0 at hold edge, 1 at gone
+          const opacity = 1 - t;
+          const translateY = Math.sign(local) * t * 44;
+          const scale = 1 - t * 0.04;
           block.style.opacity = String(opacity);
           block.style.transform = `translate3d(0,${translateY}px,0) scale(${scale})`;
-          block.style.visibility = opacity > 0.01 ? 'visible' : 'hidden';
+          block.style.visibility = 'visible';
         } else {
           block.style.opacity = '0';
           block.style.visibility = 'hidden';
@@ -246,7 +273,6 @@
       });
 
       if (scrim) {
-        const depth = Math.max(0, Math.min(1, progress / (scrubBlocks.length || 1)));
         scrim.style.opacity = String(0.32 + depth * 0.24);
       }
 
