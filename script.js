@@ -4,6 +4,14 @@
   const money = (n) => '$' + Number(n).toLocaleString('en-US');
   const now = () => new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 
+  /* — keep the pinned hero flush below the nav, even if the nav wraps — */
+  const navEl = document.querySelector('.nav');
+  const syncNavHeight = () => {
+    if (navEl) document.documentElement.style.setProperty('--nav-h', navEl.offsetHeight + 'px');
+  };
+  syncNavHeight();
+  window.addEventListener('resize', syncNavHeight);
+
   const BASE_PRICE = 5000;
   const INCREMENT = 5000;
 
@@ -192,31 +200,58 @@
     revealEls.forEach((el) => el.classList.add('is-visible'));
   }
 
-  /* — hero parallax — */
-  const hero = document.querySelector('[data-hero]');
+  /* — scroll-scrubbed hero — */
+  const stage = document.querySelector('.scrub-hero');
+  const pin = document.querySelector('.scrub-pin');
   const figure = document.querySelector('[data-hero-figure]');
+  const scrim = document.querySelector('.scrub-scrim');
+  const scrubBlocks = Array.from(document.querySelectorAll('.scrub-block'));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (hero && figure && !reduceMotion) {
-    let mx = 0, my = 0, tx = 0, ty = 0, sy = 0, raf = null;
+
+  if (stage && pin && !reduceMotion) {
+    let mx = 0, my = 0, tx = 0, ty = 0;
     const onMove = (e) => {
-      const r = hero.getBoundingClientRect();
+      const r = pin.getBoundingClientRect();
       tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
       ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
     };
     const onLeave = () => { tx = 0; ty = 0; };
-    const onScroll = () => {
-      const h = hero.offsetHeight || 1;
-      sy = Math.min(h * 0.35, Math.max(0, -hero.getBoundingClientRect().top));
-    };
+    pin.addEventListener('pointermove', onMove);
+    pin.addEventListener('pointerleave', onLeave);
+
     const loop = () => {
       mx += (tx - mx) * 0.07;
       my += (ty - my) * 0.07;
-      figure.style.transform = `translate3d(${mx * 10}px,${my * 5 + sy * 0.12}px,0) scale(1.04)`;
-      raf = requestAnimationFrame(loop);
+      if (figure) figure.style.transform = `translate3d(${mx * 10}px,${my * 5}px,0) scale(1.04)`;
+
+      const rect = stage.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      const scrolled = Math.max(0, -rect.top);
+      const progress = scrolled / vh;
+
+      scrubBlocks.forEach((block, i) => {
+        const local = progress - i;
+        if (local > -1.05 && local < 1.05) {
+          const clamped = Math.max(-1, Math.min(1, local));
+          const opacity = Math.max(0, 1 - Math.abs(clamped));
+          const translateY = clamped * 56;
+          const scale = 1 - Math.abs(clamped) * 0.045;
+          block.style.opacity = String(opacity);
+          block.style.transform = `translate3d(0,${translateY}px,0) scale(${scale})`;
+          block.style.visibility = opacity > 0.01 ? 'visible' : 'hidden';
+        } else {
+          block.style.opacity = '0';
+          block.style.visibility = 'hidden';
+        }
+      });
+
+      if (scrim) {
+        const depth = Math.max(0, Math.min(1, progress / (scrubBlocks.length || 1)));
+        scrim.style.opacity = String(0.32 + depth * 0.24);
+      }
+
+      requestAnimationFrame(loop);
     };
-    hero.addEventListener('pointermove', onMove);
-    hero.addEventListener('pointerleave', onLeave);
-    window.addEventListener('scroll', onScroll, { passive: true });
     loop();
   }
 
