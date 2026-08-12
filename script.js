@@ -191,6 +191,9 @@
   const HOLD_HALF = 0.4;
   const TRANS = 0.2;
 
+  const heroVideo = document.querySelector('.hero-figure-inner video');
+  if (heroVideo && reduceMotion) heroVideo.pause();
+
   if (stage && pin && !reduceMotion) {
     stage.style.height = (scrubBlocks.length * SEGMENT_LEN * 100) + 'vh';
 
